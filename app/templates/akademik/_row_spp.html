@@ -1,0 +1,37 @@
+<tr id="row-spp-{{ s.id }}">
+    <td class="text-center fw-bold text-muted">{{ index if index else s.id }}</td>
+    <td class="fw-bold text-primary">{{ s.tahun_ajaran.tahun if s.tahun_ajaran else '-' }}</td>
+    <td>
+        {% if s.jurusan %}
+            <span class="badge bg-info-subtle text-info fw-bold">{{ s.jurusan.nama_jurusan }}</span>
+        {% else %}
+            <span class="badge bg-secondary-subtle text-secondary fw-bold"><i class="fa-solid fa-globe me-1"></i> Global (Semua)</span>
+        {% endif %}
+    </td>
+    <td class="text-end fw-bold text-success">
+        Rp {{ "{:,.0f}".format(s.jumlah).replace(",", ".") }}
+    </td>
+    <td class="text-center">
+        <button class="btn btn-sm btn-warning text-dark px-2 me-1"
+                title="Edit Tarif"
+                hx-get="{{ url_for('akademik.edit_spp_row', id=s.id) }}"
+                hx-target="#row-spp-{{ s.id }}"
+                hx-swap="outerHTML">
+            <i class="fa-solid fa-pen-to-square"></i>
+            Edit
+        </button>
+
+        <button class="btn btn-sm btn-danger px-2"
+                title="Hapus Tarif"
+                hx-delete="{{ url_for('akademik.delete_spp_row', id=s.id) }}"
+                hx-confirm="Yakin mau hapus tarif master SPP ini?"
+                hx-target="#bagian-tabel-spp">
+            <i class="fa-solid fa-trash-can"></i>
+            Hapus
+        </button>
+
+        {% if alert_html %}
+            {{ alert_html | safe }}
+        {% endif %}
+    </td>
+</tr>

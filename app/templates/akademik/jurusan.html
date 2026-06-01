@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block title %}Data Jurusan - School App{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h3 class="fw-bold">Manajemen Data Jurusan</h3>
+        <p class="text-muted">Tambah atau hapus data jurusan sekolah.</p>
+        <hr>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-primary text-white fw-bold">
+                Tambah Jurusan
+            </div>
+            <div class="card-body">
+                <form hx-post="{{ url_for('akademik.jurusan') }}"
+                      hx-target="#bagian-tabel-jurusan"
+                      hx-swap="innerHTML"
+                      hx-indicator="#spinner-simpan"
+                      hx-on::after-request="if(event.detail.successful) this.reset()">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Nama Jurusan</label>
+                            <input type="text" class="form-control" name="nama_jurusan" placeholder="Cth: Rekayasa Perangkat Lunak" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Deskripsi</label>
+                            <textarea class="form-control" name="deskripsi" rows="3" placeholder="Deskripsi singkat aja..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 fw-bold d-flex justify-content-center align-items-center">
+                            <span>Simpan Data</span>
+                            <div id="spinner-simpan" class="htmx-indicator spinner-border spinner-border-sm ms-2" role="status"></div>
+                        </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <div class="mb-3">
+            <div class="input-group shadow-sm">
+                <span class="input-group-text bg-body-secondary"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
+                <input type="text" name="search" class="form-control" placeholder="Cari nama jurusan atau deskripsi..."
+                       hx-get="{{ url_for('akademik.jurusan_tabel') }}"
+                       hx-trigger="keyup changed delay:500ms"
+                       hx-target="#bagian-tabel-jurusan"
+                       hx-swap="innerHTML"
+                       value="{{ search }}">
+            </div>
+        </div>
+        <div id="bagian-tabel-jurusan">
+            {% include 'akademik/_daftar_jurusan.html' %}
+        </div>
+    </div>
+</div>
+{% endblock %}

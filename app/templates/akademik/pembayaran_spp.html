@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Kasir: Pembayaran SPP Siswa</h4>
+        </div>
+        <div class="card-body">
+            <div class="mb-4">
+                <div class="input-group">
+                    <span class="input-group-text bg-light"><i class="fa-solid fa-magnifying-glass"></i></span>
+                    <input type="text"
+                           name="search"
+                           class="form-control"
+                           placeholder="Ketik NIS atau Nama Siswa di sini..."
+                           value="{{ search }}"
+                           autocomplete="off"
+                           hx-get="{{ url_for('akademik.pembayaran_spp') }}"
+                           hx-trigger="keyup changed delay:300ms, search"
+                           hx-target="#hasil-pencarian">
+
+                    <!-- loading -->
+                    <span class="input-group-text bg-light htmx-indicator" id="search-indicator">
+                        <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+                    </span>
+                </div>
+                <small class="text-muted mt-1 d-block">Ketikan otomatis mencari tanpa perlu ditekan enter.</small>
+            </div>
+
+            <!-- table -->
+            <div id="hasil-pencarian">
+                {% include 'akademik/_table_pembayaran_spp.html' %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

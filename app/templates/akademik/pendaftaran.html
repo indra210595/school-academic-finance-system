@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+
+{% block title %}PPDB Online - School App Pro{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h3 class="fw-bold">Penerimaan Peserta Didik Baru (PPDB) 📝</h3>
+        <p class="text-muted">Proses pendaftaran calon siswa dan validasi status kelulusan seleksi.</p>
+        <hr>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-5 mb-4">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-primary text-white fw-bold">
+                Formulir Pendaftaran
+            </div>
+            <div class="card-body">
+                <form hx-post="{{ url_for('akademik.pendaftaran') }}"
+                      hx-target="#bagian-tabel-pendaftaran"
+                      hx-swap="innerHTML"
+                      hx-indicator="#spinner-simpan"
+                      hx-on::after-request="if(event.detail.xhr.responseText.includes('alert-success')) this.reset()">
+                      
+                    <h6 class="text-primary fw-bold mb-3 border-bottom pb-1"><i class="fa-solid fa-user me-1"></i> Data Pribadi Calon Siswa</h6>
+                    <div class="mb-2">
+                        <label class="form-label small fw-bold">Nama Lengkap</label>
+                        <input type="text" class="form-control form-control-sm" name="nama_lengkap" required>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col">
+                            <label class="form-label small fw-bold">Gender</label>
+                            <select class="form-select form-select-sm" name="jenis_kelamin" required>
+                                <option value="L">Laki-laki</option>
+                                <option value="P">Perempuan</option>
+                            </select>
+                        </div>
+                        <div class="col">
+                            <label class="form-label small fw-bold">Agama</label>
+                            <input type="text" class="form-control form-control-sm" name="agama" placeholder="Cth: Islam">
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col">
+                            <label class="form-label small fw-bold">Tempat Lahir</label>
+                            <input type="text" class="form-control form-control-sm" name="tempat_lahir">
+                        </div>
+                        <div class="col">
+                            <label class="form-label small fw-bold">Tgl Lahir</label>
+                            <input type="date" class="form-control form-control-sm" name="tanggal_lahir" required>
+                        </div>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label small fw-bold">Asal Sekolah (SMP)</label>
+                        <input type="text" class="form-control form-control-sm" name="asal_sekolah" required>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col">
+                            <label class="form-label small fw-bold">No. Telp / WA</label>
+                            <input type="text" class="form-control form-control-sm" name="telepon" placeholder="Cth: 0812...">
+                        </div>
+                        <div class="col">
+                            <label class="form-label small fw-bold">Email</label>
+                            <input type="email" class="form-control form-control-sm" name="email">
+                        </div>
+                    </div>
+
+                    <h6 class="text-success fw-bold mb-3 border-bottom pb-1 mt-4"><i class="fa-solid fa-users me-1"></i> Data Orang Tua / Wali</h6>
+                    <div class="mb-2">
+                        <label class="form-label small fw-bold">Nama Ayah Kandung</label>
+                        <input type="text" class="form-control form-control-sm" name="nama_ayah" required>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col">
+                            <label class="form-label small fw-bold">No HP Ayah</label>
+                            <input type="text" class="form-control form-control-sm" name="telp_ayah" required>
+                        </div>
+                        <div class="col">
+                            <label class="form-label small fw-bold">Pekerjaan</label>
+                            <input type="text" class="form-control form-control-sm" name="pekerjaan_ayah">
+                        </div>
+                    </div>
+
+                    <h6 class="text-warning fw-bold mb-3 border-bottom pb-1 mt-4"><i class="fa-solid fa-graduation-cap me-1"></i> Pilihan Akademik</h6>
+                    <div class="row mb-4">
+                        <div class="col">
+                            <label class="form-label small fw-bold">Jurusan Pilihan</label>
+                            <select class="form-select form-select-sm" name="jurusan_id" required>
+                                <option value="">-- Pilih --</option>
+                                {% for j in list_jurusan %}
+                                <option value="{{ j.id }}">{{ j.nama_jurusan }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col">
+                            <label class="form-label small fw-bold">Tahun Ajaran</label>
+                            <select class="form-select form-select-sm" name="tahun_ajaran_id" required>
+                                {% for ta in list_ta %}
+                                <option value="{{ ta.id }}">{{ ta.tahun }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 fw-bold d-flex justify-content-center align-items-center shadow-sm">
+                        <span>Daftarkan Calon Siswa</span>
+                        <div id="spinner-simpan" class="htmx-indicator spinner-border spinner-border-sm ms-2" role="status"></div>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-7">
+        <div class="mb-3">
+            <div class="input-group shadow-sm">
+                <span class="input-group-text bg-body-secondary"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
+                <input type="text" name="search" class="form-control" placeholder="Cari nama calon siswa atau nomor daftar..."
+                       hx-get="{{ url_for('akademik.pendaftaran_tabel') }}"
+                       hx-trigger="keyup changed delay:500ms"
+                       hx-target="#bagian-tabel-pendaftaran"
+                       hx-swap="innerHTML"
+                       value="{{ search }}">
+            </div>
+        </div>
+        
+        <div id="bagian-tabel-pendaftaran">
+            {% include 'akademik/_daftar_pendaftaran.html' %}
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalDetailPendaftaran" tabindex="-1" aria-labelledby="modalDetailLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content shadow border-0" id="isi-modal-detail">
+            <div class="modal-body text-center py-4">
+                <div class="spinner-border text-primary" role="status"></div>
+                <p class="text-muted mt-2 mb-0">Sedang memuat data pendaftar...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalPlottingKelas" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content shadow border-0" id="isi-modal-plotting">
+            <div class="modal-body text-center py-4">
+                <div class="spinner-border text-success" role="status"></div>
+                <p class="text-muted mt-2 mb-0">Memuat daftar kelas yang cocok...</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

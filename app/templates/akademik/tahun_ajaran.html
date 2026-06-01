@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block title %}Tahun Ajaran - School App Pro{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h3 class="fw-bold">Manajemen Tahun Ajaran 📅</h3>
+        <p class="text-muted">Kelola periode aktif tahun ajaran sekolah.</p>
+        <hr>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-primary text-white fw-bold">
+                Tambah Tahun Ajaran
+            </div>
+            <div class="card-body">
+                <form hx-post="{{ url_for('akademik.tahun_ajaran') }}"
+                      hx-target="#bagian-tabel-tahun-ajaran"
+                      hx-swap="innerHTML"
+                      hx-indicator="#spinner-simpan"
+                      hx-on::after-request="if(event.detail.successful) this.reset()">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Tahun Ajaran</label>
+                            <input type="text" class="form-control" name="tahun_ajaran" placeholder="Cth: 2025/2026" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Status Default</label>
+                            <select class="form-select" name="is_aktif">
+                                <option value="false">Tidak Aktif</option>
+                                <option value="true">Aktif</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Bulan Mulai</label>
+                            <select class="form-select" name="start_month" required>
+                                <option value="7" selected>Juli (Default)</option>
+                                <option value="1">Januari</option>
+                                <option value="2">Februari</option>
+                                <option value="3">Maret</option>
+                                <option value="4">April</option>
+                                <option value="5">Mei</option>
+                                <option value="6">Juni</option>
+                                <option value="8">Agustus</option>
+                                <option value="9">September</option>
+                                <option value="10">Oktober</option>
+                                <option value="11">November</option>
+                                <option value="12">Desember</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Bulan Selesai</label>
+                            <select class="form-select" name="end_month" required>
+                                <option value="6" selected>Juni (Default)</option>
+                                <option value="1">Januari</option>
+                                <option value="2">Februari</option>
+                                <option value="3">Maret</option>
+                                <option value="4">April</option>
+                                <option value="5">Mei</option>
+                                <option value="7">Juli</option>
+                                <option value="8">Agustus</option>
+                                <option value="9">September</option>
+                                <option value="10">Oktober</option>
+                                <option value="11">November</option>
+                                <option value="12">Desember</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 fw-bold d-flex justify-content-center align-items-center">
+                            <span>Simpan Periode</span>
+                            <div id="spinner-simpan" class="htmx-indicator spinner-border spinner-border-sm ms-2" role="status"></div>
+                        </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <div class="mb-3">
+            <div class="input-group shadow-sm">
+                <span class="input-group-text bg-body-secondary"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
+                <input type="text" name="search" class="form-control" placeholder="Cari Tahun Aajaran"
+                       hx-get="{{ url_for('akademik.tahun_ajaran_tabel') }}"
+                       hx-trigger="keyup changed delay:500ms"
+                       hx-target="#bagian-tabel-tahun-ajaran"
+                       hx-swap="innerHTML"
+                       value="{{ search }}">
+            </div>
+        </div>
+        <div id="bagian-tabel-tahun-ajaran">
+            {% include 'akademik/_daftar_tahun_ajaran.html' %}
+        </div>
+    </div>
+</div>
+{% endblock %}

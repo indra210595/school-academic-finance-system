@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: sans-serif; }
+        .header { text-align: center; border-bottom: 2px solid #000; margin-bottom: 20px; }
+        .info-table { width: 100%; margin-bottom: 20px; }
+        .item-table { width: 100%; border-collapse: collapse; }
+        .item-table th, .item-table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>KUITANSI PEMBAYARAN SPP</h1>
+        <p>Sekolah - Tahun Ajaran {{ tagihan.tahun }}/{{ tagihan.tahun + 1 }}</p>
+    </div>
+
+    <table class="info-table">
+        <tr>
+            <td>
+                <strong>Nama:</strong>
+                {{ tagihan.siswa.nama_siswa }}
+            </td>
+            <td>
+                <strong>NIS:</strong>
+                {{ tagihan.siswa.nis }}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <strong>Bulan:</strong>
+                {{ tagihan.bulan }}
+            </td>
+            <td>
+                <strong>Status:</strong>
+                {{ tagihan.status }}
+            </td>
+        </tr>
+    </table>
+
+    <table class="item-table">
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th>Jumlah</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in tagihan.items %}
+                <tr>
+                    <td>{{ item.nama_item }}</td>
+                    <td>Rp {{ item.jumlah }}</td>
+                </tr>
+            {% endfor %}
+            <tr>
+                <td>
+                    <strong>Total</strong>
+                </td>
+                <td>
+                    <strong>Rp {{ tagihan.total }}</strong>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

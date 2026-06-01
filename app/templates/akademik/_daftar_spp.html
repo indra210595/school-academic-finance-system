@@ -1,0 +1,75 @@
+{% if alert_message %}
+<div id="bagian-alert-spp" hx-swap-oob="true">
+    <div class="alert alert-{{ alert_category }} alert-dismissible fade show fw-medium" role="alert">
+        <i class="fa-solid {% if alert_category == 'success' %}fa-circle-check{% else %}fa-circle-exclamation{% endif %} me-2"></i>
+        {{ alert_message | safe }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+</div>
+{% endif %}
+<div class="card shadow-sm border-0">
+    <div class="card-header fw-bold">
+        Daftar Spp
+    </div>
+    <div class="card-body">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th class="text-center" style="width: 8%;">No</th>
+                    <th>Tahun Ajaran</th>
+                    <th>Jurusan</th>
+                    <th class="text-end">Nominal Tarif</th>
+                    <th class="text-center">Aksi</th>
+                </tr>
+            </thead>
+            <tbody style="font-size: 0.875rem;">
+                {% if list_spp %}
+                    {% for s in list_spp %}
+                        {% set index = loop.index + ((current_page - 1) * per_page) %}
+                        {% include 'akademik/_row_spp.html' %}
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center text-muted py-4 italic">
+                            <i class="fa-solid fa-folder-open d-block fs-3 mb-2 text-secondary"></i>
+                            Belum ada konfigurasi tarif SPP yang dibuat.
+                        </td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+        {% if total_pages > 1 %}
+        <nav aria-label="Page navigation" class="mt-4">
+            <ul class="pagination justify-content-center mb-0">
+
+                <li class="page-item {% if current_page == 1 %}disabled{% endif %}">
+                    <button class="page-link shadow-none"
+                            hx-get="{{ url_for('akademik.master_spp', page=current_page-1) }}"
+                            hx-target="#bagian-tabel-spp">
+                        &laquo; Prev
+                    </button>
+                </li>
+
+                {% for p in range(1, total_pages + 1) %}
+                <li class="page-item {% if p == current_page %}active{% endif %}">
+                    <button class="page-link shadow-none"
+                            hx-get="{{ url_for('akademik.master_spp', page=p) }}"
+                            hx-target="#bagian-tabel-spp">
+                        {{ p }}
+                    </button>
+                </li>
+                {% endfor %}
+
+                <li class="page-item {% if current_page == total_pages %}disabled{% endif %}">
+                    <button class="page-link shadow-none"
+                            hx-get="{{ url_for('akademik.master_spp', page=current_page+1) }}"
+                            hx-target="#bagian-tabel-spp">
+                        Next &raquo;
+                    </button>
+                </li>
+
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</div>

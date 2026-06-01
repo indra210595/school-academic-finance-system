@@ -1,0 +1,64 @@
+<div class="modal-header bg-dark text-white">
+    <h5 class="modal-title fw-bold" id="modalDetailLabel">
+        <i class="fa-solid fa-id-card me-2"></i> Lembar Detail Pendaftar: {{ c.nama_lengkap }}
+    </h5>
+    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+<div class="modal-body p-4">
+    <div class="row">
+        <div class="col-md-6 border-end">
+            <h6 class="fw-bold text-primary mb-3 border-bottom pb-1">
+                <i class="fa-solid fa-user me-1"></i> Biodata Calon Siswa
+            </h6>
+            <table class="table table-sm table-borderless text-start">
+                <tr><td class="text-muted small" style="width: 35%;">No. Registrasi</td><td class="fw-bold">: {{ p.nomor }}</td></tr>
+                <tr><td class="text-muted small">Nama Lengkap</td><td class="fw-bold">: {{ c.nama_lengkap }}</td></tr>
+                <tr><td class="text-muted small">Gender</td><td>: {{ 'Laki-laki' if c.jenis_kelamin == 'L' else 'Perempuan' }}</td></tr>
+                <tr><td class="text-muted small">Tanggal Lahir</td><td>: {{ c.tanggal_lahir.strftime('%d %B %Y') }}</td></tr>
+                <tr><td class="text-muted small">Agama</td><td>: {{ c.agama or '-' }}</td></tr>
+                <tr><td class="text-muted small">Asal Sekolah</td><td class="fw-bold text-success">: {{ c.asal_sekolah }}</td></tr>
+                <tr><td class="text-muted small">No. HP/WA</td><td>: <span class="badge bg-secondary-subtle text-secondary">{{ c.telepon or '-' }}</span></td></tr>
+                <tr><td class="text-muted small">Email</td><td>: <span class="text-lowercase">{{ c.email or '-' }}</span></td></tr>
+            </table>
+        </div>
+
+        <div class="col-md-6 shadow-none">
+            <h6 class="fw-bold text-success mb-3 border-bottom pb-1">
+                <i class="fa-solid fa-users me-1"></i> Data Orang Tua / Wali
+            </h6>
+            <table class="table table-sm table-borderless text-start mb-4">
+                {% if ayah %}
+                <tr><td class="text-muted small" style="width: 35%;">Nama Ayah</td><td class="fw-bold">: {{ ayah.nama }}</td></tr>
+                <tr><td class="text-muted small">No. HP Ayah</td><td>: {{ ayah.telepon }}</td></tr>
+                <tr><td class="text-muted small">Pekerjaan</td><td>: {{ ayah.pekerjaan or '-' }}</td></tr>
+                {% else %}
+                <tr><td colspan="2" class="text-muted small italic">Data Ayah tidak diisi.</td></tr>
+                {% endif %}
+            </table>
+
+            <h6 class="fw-bold text-warning mb-3 border-bottom pb-1">
+                <i class="fa-solid fa-graduation-cap me-1"></i> Pilihan Institusi
+            </h6>
+            <table class="table table-sm table-borderless text-start">
+                <tr><td class="text-muted small" style="width: 35%;">Jurusan Tujuan</td><td class="fw-bold">: {{ p.jurusan.nama_jurusan }}</td></tr>
+                <tr><td class="text-muted small">Tahun Ajaran</td><td>: {{ p.tahun_ajaran.tahun }}</td></tr>
+                <tr><td class="text-muted small">Tgl Mendaftar</td><td>: {{ p.tanggal_daftar.strftime('%d/%m/%Y') }}</td></tr>
+                <tr>
+                    <td class="text-muted small">Status Seleksi</td>
+                    <td>:
+                        {% if p.status == 'pending' %}
+                        <span class="badge bg-warning text-dark">Pending</span>
+                        {% elif p.status == 'diterima' %}
+                        <span class="badge bg-success">Diterima</span>
+                        {% else %}
+                        <span class="badge bg-danger">Ditolak</span>
+                        {% endif %}
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="modal-footer bg-light">
+    <button type="button" class="btn btn-secondary fw-bold shadow-sm" data-bs-modal="modal" data-bs-dismiss="modal">Tutup</button>
+</div>

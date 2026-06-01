@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block title %}Master Konfigurasi SPP{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4 py-3">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="fw-bold mb-0"><i class="fa-solid fa-money-check-dollar text-primary me-2"></i>Master Konfigurasi Tarif SPP</h4>
+            <small class="text-muted">Tentukan besaran nominal tagihan SPP bulanan per Angkatan / Jurusan</small>
+        </div>
+    </div>
+
+    <div id="bagian-alert-spp"></div>
+
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card shadow border-0 rounded-3">
+                <div class="card-header bg-dark text-white fw-bold py-3">
+                    <i class="fa-solid fa-plus me-1"></i> Buat Konfigurasi Tarif
+                </div>
+                <div class="card-body p-4">
+                    <form hx-post="{{ url_for('akademik.master_spp') }}"
+                          hx-target="#bagian-tabel-spp"
+                          hx-swap="innerHTML"
+                          hx-indicator="#spinner-save-spp"
+                          hx-on::after-request="if(event.detail.xhr.responseText.includes('alert-success')) this.reset()">
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Tahun Ajaran / Angkatan</label>
+                            <select class="form-select form-select-sm" name="tahun_ajaran_id" required>
+                                <option value="">-- Pilih Tahun Ajaran --</option>
+                                {% for ta in list_ta %}
+                                <option value="{{ ta.id }}">{{ ta.tahun }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold">Jurusan (Opsional)</label>
+                            <select class="form-select form-select-sm" name="jurusan_id">
+                                <option value="">-- Semua Jurusan (Sama Rata) --</option>
+                                {% for j in list_jur %}
+                                <option value="{{ j.id }}">{{ j.nama_jurusan }}</option>
+                                {% endfor %}
+                            </select>
+                            <small class="text-muted d-block mt-1" style="font-size: 0.75rem;">
+                                Kosongkan jika tarif SPP berlaku sama untuk semua jurusan di angkatan tersebut.
+                            </small>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label small fw-bold">Nominal SPP Per Bulan (Rp)</label>
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text bg-secondary-subtle fw-bold">Rp</span>
+                                <input type="number" class="form-control" name="jumlah" placeholder="Contoh: 350000" required min="0">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-sm w-100 fw-bold py-2 shadow-sm">
+                            <span class="spinner-border spinner-border-sm me-1 d-none" id="spinner-save-spp" role="status"></span>
+                            <i class="fa-solid fa-floppy-disk me-1"></i> Simpan
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8 mb-4">
+            <div class="card shadow border-0 rounded-3">
+                <div class="card-body p-0" id="bagian-tabel-spp">
+                    {% include 'akademik/_daftar_spp.html' %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

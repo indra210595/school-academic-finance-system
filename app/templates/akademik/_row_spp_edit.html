@@ -1,0 +1,48 @@
+<tr id="row-spp-{{ s.id }}" class="table-light">
+    <td class="text-center fw-bold text-muted">#</td>
+    <td>
+        <select class="form-select form-select-sm" name="tahun_ajaran_id" required>
+            {% for ta in list_ta %}
+            <option value="{{ ta.id }}" {% if ta.id == s.tahun_ajaran_id %}selected{% endif %}>{{ ta.tahun }}</option>
+            {% endfor %}
+        </select>
+    </td>
+    <td>
+        <select class="form-select form-select-sm" name="jurusan_id">
+            <option value="">-- Global (Semua) --</option>
+            {% for j in list_jur %}
+            <option value="{{ j.id }}" {% if j.id == s.jurusan_id %}selected{% endif %}>{{ j.nama_jurusan }}</option>
+            {% endfor %}
+        </select>
+    </td>
+    <td>
+        <div class="input-group input-group-sm">
+            <span class="input-group-text fw-bold">Rp</span>
+            <input type="number" class="form-control form-control-sm fw-bold text-success" name="jumlah" value="{{ s.jumlah | int }}" required min="0">
+        </div>
+    </td>
+    <td class="text-center">
+        <button class="btn btn-sm btn-success px-2 me-1"
+                hx-post="{{ url_for('akademik.update_spp_row', id=s.id) }}"
+                hx-include="closest tr"
+                hx-target="#row-spp-{{ s.id }}"
+                hx-swap="outerHTML"
+                title="Simpan Perubahan">
+            <i class="fa-solid fa-check"></i>
+            Simpan
+        </button>
+
+        <button class="btn btn-sm btn-secondary px-2"
+                hx-get="{{ url_for('akademik.cancel_spp_row', id=s.id) }}"
+                hx-target="#row-spp-{{ s.id }}"
+                hx-swap="outerHTML"
+                title="Batal">
+            <i class="fa-solid fa-xmark"></i>
+            Batal
+        </button>
+
+        {% if alert_html %}
+            {{ alert_html | safe }}
+        {% endif %}
+    </td>
+</tr>

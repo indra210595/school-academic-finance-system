@@ -1,0 +1,78 @@
+{% if alert_message %}
+<div class="alert alert-{{ alert_category }} alert-dismissible fade show shadow-sm" role="alert">
+    {{ alert_message | safe }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endif %}
+
+<div class="card shadow-sm border-0">
+    <div class="card-header fw-bold">
+        Daftar Kelas Terdaftar
+    </div>
+    <div class="card-body">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>No</th>
+                    <th>Nama Kelas</th>
+                    <th>Jurusan</th>
+                    <th>Tahun Ajaran</th>
+                    <th class="text-center">Aksi</th>
+                </tr>
+            </thead>
+            <tbody id="tabel-kelas">
+                {% for k in daftar_kelas %}
+                <tr id="baris-kelas-{{ k.id }}">
+                    {% set nomor_nyata = ((current_page - 1) * per_page) + loop.index %}
+                    <td>{{ nomor_nyata }}</td>
+                    <td class="fw-bold text-primary">{{ k.nama_kelas }}</td>
+                    <td>{{ k.jurusan.nama_jurusan }}</td>
+                    <td>
+                        {{ k.tahun_ajaran.tahun }}
+                        {% if k.tahun_ajaran.is_active %}
+                        <span class="badge bg-success-subtle text-success ms-1">Aktif</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-center">
+                        <button class="btn btn-sm btn-warning fw-bold text-white me-1"
+                                hx-get="{{ url_for('akademik.edit_kelas', id=k.id) }}?no={{ nomor_nyata }}&page={{ current_page }}&search={{ search }}"
+                                hx-target="#baris-kelas-{{ k.id }}"
+                                hx-swap="outerHTML">
+                            <i class="fa-solid fa-pen-to-square"></i> Edit
+                        </button>
+                        <button class="btn btn-sm btn-danger fw-bold"
+                                hx-delete="{{ url_for('akademik.hapus_kelas', id=k.id) }}"
+                                hx-target="#baris-kelas-{{ k.id }}"
+                                hx-swap="outerHTML"
+                                hx-confirm="Yakin mau hapus kelas {{ k.nama_kelas }}?">
+                            Hapus
+                        </button>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" class="text-center text-muted py-4">Belum ada data kelas.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {% if total_pages > 1 %}
+        <nav aria-label="Page navigation" class="mt-4">
+            <ul class="pagination justify-content-center mb-0">
+                <li class="page-item {% if current_page == 1 %}disabled{% endif %}">
+                    <button class="page-link shadow-none" hx-get="{{ url_for('akademik.kelas_tabel') }}?page={{ current_page - 1 }}&search={{ search }}" hx-target="#bagian-tabel-kelas" hx-swap="innerHTML">&laquo; Prev</button>
+                </li>
+                {% for p in range(1, total_pages + 1) %}
+                <li class="page-item {% if p == current_page %}active{% endif %}">
+                    <button class="page-link shadow-none" hx-get="{{ url_for('akademik.kelas_tabel') }}?page={{ p }}&search={{ search }}" hx-target="#bagian-tabel-kelas" hx-swap="innerHTML">{{ p }}</button>
+                </li>
+                {% endfor %}
+                <li class="page-item {% if current_page == total_pages %}disabled{% endif %}">
+                    <button class="page-link shadow-none" hx-get="{{ url_for('akademik.kelas_tabel') }}?page={{ current_page + 1 }}&search={{ search }}" hx-target="#bagian-tabel-kelas" hx-swap="innerHTML">Next &raquo;</button>
+                </li>
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</div>

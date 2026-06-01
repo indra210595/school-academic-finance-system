@@ -1,0 +1,99 @@
+{% if alert_message %}
+<div class="alert alert-{{ alert_category }} alert-dismissible fade show shadow-sm" role="alert">
+    {{ alert_message | safe }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endif %}
+
+<div class="card shadow-sm border-0">
+    <div class="card-header fw-bold">
+        Data Calon Pendaftar
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>No Reg</th>
+                        <th>Nama Calon Siswa</th>
+                        <th>Pilihan Jurusan</th>
+                        <th>Status</th>
+                        <th class="text-center">Aksi Seleksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in daftar_pendaftaran %}
+                    <tr>
+                        <td><small class="fw-bold text-secondary">{{ p.nomor }}</small></td>
+                        <td>
+                            <div class="fw-bold">{{ p.calon_siswa.nama_lengkap }}</div>
+                            <small class="text-muted">{{ p.calon_siswa.asal_sekolah }}</small>
+                        </td>
+                        <td><span class="badge bg-secondary-subtle text-secondary">{{ p.jurusan.nama_jurusan }}</span></td>
+                        <td>
+                            {% if p.status == 'pending' %}
+                            <span class="badge bg-warning text-dark"><i class="fa-solid fa-clock me-1"></i> Pending</span>
+                            {% elif p.status == 'diterima' %}
+                            <span class="badge bg-success"><i class="fa-solid fa-circle-check me-1"></i> Diterima</span>
+                            {% else %}
+                            <span class="badge bg-danger"><i class="fa-solid fa-circle-xmark me-1"></i> Ditolak</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            <button class="btn btn-sm btn-info text-white fw-bold me-1 px-2"
+                                    hx-get="{{ url_for('akademik.detail_pendaftaran', id=p.id) }}"
+                                    hx-target="#isi-modal-detail"
+                                    hx-swap="innerHTML"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modalDetailPendaftaran">
+                                <i class="fa-solid fa-eye"></i> Detail
+                            </button>
+                            |
+                            {% if p.status == 'pending' %}
+                            <button class="btn btn-sm btn-success fw-bold me-1 px-2"
+                                    hx-get="{{ url_for('akademik.modal_terima_kelas', id=p.id) }}"
+                                    hx-target="#isi-modal-plotting"
+                                    hx-swap="innerHTML"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modalPlottingKelas">
+                                <i class="fa-solid fa-check"></i> Terima
+                            </button>
+                            <button class="btn btn-sm btn-danger fw-bold px-2"
+                                    hx-post="{{ url_for('akademik.ubah_status_pendaftaran', id=p.id) }}?status=ditolak&page={{ current_page }}&search={{ search }}"
+                                    hx-target="#bagian-tabel-pendaftaran"
+                                    hx-confirm="Yakin ingin MENOLAK calon siswa {{ p.calon_siswa.nama_lengkap }}?">
+                                <i class="fa-solid fa-xmark"></i> Tolak
+                            </button>
+                            {% else %}
+                            <span class="text-muted small italic">Seleksi Selesai</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center text-muted py-4">Belum ada data pendaftar masuk.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if total_pages > 1 %}
+        <nav aria-label="Page navigation" class="p-3">
+            <ul class="pagination justify-content-center mb-0">
+                <li class="page-item {% if current_page == 1 %}disabled{% endif %}">
+                    <button class="page-link shadow-none" hx-get="{{ url_for('akademik.pendaftaran_tabel') }}?page={{ current_page - 1 }}&search={{ search }}" hx-target="#bagian-tabel-pendaftaran" hx-swap="innerHTML">&laquo; Prev</button>
+                </li>
+                {% for p in range(1, total_pages + 1) %}
+                <li class="page-item {% if p == current_page %}active{% endif %}">
+                    <button class="page-link shadow-none" hx-get="{{ url_for('akademik.pendaftaran_tabel') }}?page={{ p }}&search={{ search }}" hx-target="#bagian-tabel-pendaftaran" hx-swap="innerHTML">{{ p }}</button>
+                </li>
+                {% endfor %}
+                <li class="page-item {% if current_page == total_pages %}disabled{% endif %}">
+                    <button class="page-link shadow-none" hx-get="{{ url_for('akademik.pendaftaran_tabel') }}?page={{ current_page + 1 }}&search={{ search }}" hx-target="#bagian-tabel-pendaftaran" hx-swap="innerHTML">Next &raquo;</button>
+                </li>
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</div>

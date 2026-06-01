@@ -1,0 +1,41 @@
+{% if search %}
+    {% if siswa_list %}
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th width="5%">No</th>
+                        <th width="15%">NIS</th>
+                        <th width="40%">Nama Siswa</th>
+                        <th width="20%">Kelas</th>
+                        <th width="20%" class="text-center">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for siswa in siswa_list %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ siswa.nis }}</td>
+                        <td>{{ siswa.nama_siswa }}</td>
+                        <td>{{ siswa.kelas.nama_kelas }}</td>
+                        <td class="text-center">
+                            <a href="{{ url_for('akademik.detail_pembayaran_spp', id=siswa.id) }}"
+                               class="btn btn-success btn-sm">
+                                Lihat Tagihan
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-warning text-center" role="alert">
+            Data siswa dengan kata kunci <strong>"{{ search }}"</strong> tidak ditemukan!
+        </div>
+    {% endif %}
+{% else %}
+    <div class="alert alert-info text-center" role="alert">
+        Silakan ketik NIS atau Nama Siswa di kotak pencarian atas buat mulai transaksi pembayaran SPP.
+    </div>
+{% endif %}

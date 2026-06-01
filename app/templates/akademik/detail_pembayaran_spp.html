@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <a href="{{ url_for('akademik.pembayaran_spp') }}" class="btn btn-outline-secondary mb-3">
+        <i class="fa-solid fa-arrow-left me-1"></i> Kembali ke Pencarian
+    </a>
+
+    <div class="card shadow mb-4 border-primary">
+        <div class="card-body">
+            <h5 class="card-title text-primary"><i class="fa-solid fa-user-graduate me-2"></i>Profil Siswa</h5>
+            <hr>
+            <div class="row">
+                <div class="col-md-4">
+                    <p class="mb-1 text-muted">NIS</p>
+                    <p class="fw-bold">{{ siswa.nis }}</p>
+                </div>
+                <div class="col-md-4">
+                    <p class="mb-1 text-muted">Nama Siswa</p>
+                    <p class="fw-bold">{{ siswa.nama_siswa }}</p>
+                </div>
+                <div class="col-md-4">
+                    <p class="mb-1 text-muted">Kelas / Jurusan</p>
+                    <p class="fw-bold">{{ siswa.kelas.nama_kelas }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow">
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0"><i class="fa-solid fa-list-check me-2"></i>Daftar Tagihan SPP</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th width="5%">No</th>
+                            <th width="20%">Bulan Tagihan</th>
+                            <th width="20%">Nominal (Rp)</th>
+                            <th width="15%" class="text-center">Status</th>
+                            <th width="20%" class="text-center">Tgl Bayar</th>
+                            <th width="20%" class="text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for tagihan in list_tagihan %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td class="fw-bold">{{ nama_bulan[tagihan.bulan] }} {{ tagihan.tahun }}</td>
+                            <td>
+                                <div class="fw-bold text-success mb-1">Rp {{ tagihan.total }}</div>
+                                <ul class="list-unstyled text-muted mb-0" style="font-size: 0.85rem;">
+                                    {% for item in tagihan.items %}
+                                        <li><i class="fa-solid fa-angle-right me-1" style="font-size: 0.7rem;"></i>
+                                            {{ item.nama_item }}: Rp {{ item.jumlah }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </td>
+                            <td class="text-center">
+                                <span id="status-{{ tagihan.id }}">
+                                    {% if tagihan.status == 'paid' %}
+                                        <span class="badge bg-success">Lunas</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">Belum Bayar</span>
+                                    {% endif %}
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <span id="tanggal-{{ tagihan.id }}">
+                                    {% if tagihan.status == 'paid' and tagihan.payments %}
+                                        {{ tagihan.payments[0].tanggal.strftime('%d-%m-%Y') }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </span>
+                            </td>
+                            <td class="text-center" id="aksi-{{ tagihan.id }}">
+                                {% if tagihan.status == 'paid' %}
+                                    <button class="btn btn-secondary btn-sm" disabled>Sudah Dibayar</button>
+                                    <a href="{{ url_for('akademik.cetak_invoice', invoice_id=tagihan.id) }}"
+                                       class="btn btn-warning btn-sm" target="_blank">
+                                        <i class="fa-solid fa-print me-1"></i> Cetak PDF
+                                    </a>
+                                {% else %}
+                                    <button class="btn btn-primary btn-sm"
+                                        hx-post="{{ url_for('akademik.proses_bayar_spp', invoice_id=tagihan.id) }}"
+                                        hx-target="#aksi-{{ tagihan.id }}">Bayar Sekarang</button>
+                                {% endif %}
+
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
