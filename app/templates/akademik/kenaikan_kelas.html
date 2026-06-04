@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% block title %}Kenaikan Kelas Massal - School App{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h3 class="fw-bold">Kenaikan Kelas Massal</h3>
+        <p class="text-muted">
+            Pindahkan atau naikkan status kelas seluruh siswa dari satu kelas ke kelas tujuan secara instan.
+        </p>
+        <hr>
+    </div>
+</div>
+
+<div id="feedback-kenaikan" class="mb-3"></div>
+
+<form hx-post="{{ url_for('akademik.proses_kenaikan_kelas') }}"
+      hx-target="#feedback-kenaikan"
+      hx-indicator="#spinner-proses">
+      
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-danger text-white fw-bold">
+                    <i class="fa-solid fa-arrow-right-from-bracket me-1"></i> Dari Kelas (Asal)
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Tahun Ajaran Asal</label>
+                        <select class="form-select" name="ta_asal_id"
+                                hx-get="{{ url_for('akademik.ambil_kelas_dropdown') }}?tipe=asal"
+                                hx-trigger="change"
+                                hx-target="#kelas_asal_id">
+                            <option value="">-- Pilih Tahun Ajaran --</option>
+                            {% for ta in tahun_ajarans %}
+                                <option value="{{ ta.id }}">
+                                    {{ ta.tahun }} {% if ta.is_active %}(Aktif){% endif %}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Kelas Asal</label>
+                        <select class="form-select" id="kelas_asal_id" name="kelas_asal_id"
+                                hx-get="{{ url_for('akademik.kenaikan_list_siswa') }}"
+                                hx-trigger="change"
+                                hx-target="#daftar-siswa-container">
+                            <option value="">Pilih Tahun Ajaran Dulu</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-success text-white fw-bold">
+                    <i class="fa-solid fa-arrow-right-to-bracket me-1"></i> Ke Kelas (Tujuan)
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Tahun Ajaran Tujuan</label>
+                        <select class="form-select" name="ta_tujuan_id"
+                                hx-get="{{ url_for('akademik.ambil_kelas_dropdown') }}?tipe=tujuan"
+                                hx-trigger="change"
+                                hx-target="#kelas_tujuan_id">
+                            <option value="">-- Pilih Tahun Ajaran --</option>
+                            {% for ta in tahun_ajarans %}
+                                <option value="{{ ta.id }}">{{ ta.tahun }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Kelas Tujuan</label>
+                        <select class="form-select" id="kelas_tujuan_id" name="kelas_tujuan_id">
+                            <option value="">Pilih Tahun Ajaran Dulu</option>
+                        </select>
+                    </div>
+                    
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-primary fw-bold py-2 shadow-sm"
+                                onclick="return confirm('Apakah yakin mau menaikkan massal semua siswa di kelas tersebut?')">
+                            <i class="fa-solid fa-graduation-cap me-1"></i>
+                            Eksekusi Kenaikan Massal
+                            <span id="spinner-proses" class="spinner-border spinner-border-sm htmx-indicator ms-1" role="status"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm border-0" style="max-height: 450px; overflow-y: auto;">
+                <div class="card-header bg-dark text-white fw-bold d-flex justify-content-between align-items-center">
+                    <span>
+                        <i class="fa-solid fa-users me-1"></i>
+                        Daftar Murid Terdeteksi
+                    </span>
+                </div>
+                <div class="card-body p-2" id="daftar-siswa-container">
+                    <p class="text-muted text-center my-3">Pilih kelas asal untuk lihat daftar siswa.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock %}

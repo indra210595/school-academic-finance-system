@@ -106,6 +106,12 @@
                         <i class="fa-solid fa-door-open"></i> <span class="menu-text">Kelas</span>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if request.endpoint == 'akademik.kenaikan_kelas' %}active{% endif %}"
+                       href="{{ url_for('akademik.kenaikan_kelas') }}">
+                        <i class="fa-solid fa-up-long"></i> <span class="menu-text">Kenaikan Kelas</span>
+                    </a>
+                </li>
                 <div class="px-3 py-2 text-uppercase text-muted fw-bold sidebar-heading" style="font-size: 0.75rem;">
                     Proses PPDB
                 </div>

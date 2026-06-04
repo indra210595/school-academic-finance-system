@@ -31,7 +31,7 @@ Aplikasi web berbasis **Python Flask** untuk manajemen akademik, pendaftaran sis
 * **📊 Business Intelligence Dashboard (Chart.js):** Dilengkapi grafik batang (*Bar Chart*) untuk rekap pendapatan bulanan yayasan serta grafik donat (*Doughnut Chart*) untuk memetakan persentase minat jurusan calon siswa baru.
 * **📄 Enterprise Reporting System (OpenPyXL & WeasyPrint):** * Fitur cetak kuitansi pembayaran/kuitansi fisik langsung berformat PDF secara *on-the-fly*.
   * Fitur *Export* data rekapitulasi keuangan bulanan dan pendaftaran ke format file Microsoft Excel (`.xlsx`).
-
+* **🚀 Kenaikan Kelas Massal (HTMX Dynamic Chaining):** Fitur khusus admin TU untuk menaikkan atau memindahkan seluruh siswa dari satu kelas ke kelas tujuan antar-tahun ajaran secara instan. Memanfaatkan HTMX untuk memuat daftar murid secara *real-time* dan *chaining dropdown* otomatis tanpa *reload* halaman.
 ---
 
 ## 🛠️ Tech Stack

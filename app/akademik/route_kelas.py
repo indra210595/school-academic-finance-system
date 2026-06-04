@@ -1,7 +1,7 @@
 from flask import render_template, request, url_for
 from flask_login import login_required
 from app import db
-from app.models import Kelas, Jurusan, TahunAjaran
+from app.models import Kelas, Jurusan, TahunAjaran, Siswa
 from app.akademik import akademik_bp
 from sqlalchemy import func
 import time
@@ -265,3 +265,93 @@ def roll_over_kelas():
     return render_template('akademik/_daftar_kelas.html',
                            daftar_kelas=daftar, current_page=1, total_pages=total_pages, per_page=PER_PAGE, search="",
                            alert_message=msg, alert_category=cat)
+
+# kenaikan kelas
+@akademik_bp.route('/kenaikan-kelas', methods=['GET'])
+@login_required
+def kenaikan_kelas():
+    tahun_ajarans = db.session.execute(
+        db.select(TahunAjaran).order_by(TahunAjaran.tahun.desc())
+    ).scalars().all()
+    return render_template('akademik/kenaikan_kelas.html', tahun_ajarans=tahun_ajarans)
+
+
+@akademik_bp.route('/kenaikan-kelas/ambil-kelas', methods=['GET'])
+@login_required
+def ambil_kelas_dropdown():
+    ta_id = request.args.get('ta_asal_id', type=int) or request.args.get('ta_tujuan_id', type=int)
+    tipe = request.args.get('tipe', 'asal')  # asal atau tujuan
+
+    if not ta_id:
+        return f'<option value="">Pilih Tahun Ajaran {tipe.capitalize()} Dulu</option>'
+
+    # Ambil kelas yang terdaftar di TA terpilih
+    list_kelas = db.session.execute(
+        db.select(Kelas).where(Kelas.tahun_ajaran_id == ta_id).order_by(Kelas.nama_kelas)
+    ).scalars().all()
+
+    html = f'<option value="">-- Pilih Kelas {tipe.capitalize()} --</option>'
+    for k in list_kelas:
+        html += f'<option value="{k.id}">{k.nama_kelas}</option>'
+    return html
+
+
+@akademik_bp.route('/kenaikan-kelas/list-siswa', methods=['GET'])
+@login_required
+def kenaikan_list_siswa():
+    kelas_asal_id = request.args.get('kelas_asal_id', type=int)
+    if not kelas_asal_id:
+        return '<p class="text-muted text-center my-3">Pilih kelas asal untuk lihat daftar siswa.</p>'
+
+    # ambil siswa yang ada di kelas asal
+    list_siswa = db.session.execute(
+        db.select(Siswa).where(Siswa.kelas_id == kelas_asal_id).order_by(Siswa.id)
+    ).scalars().all()
+
+    if not list_siswa:
+        return '<div class="alert alert-warning text-center">Tidak ada siswa aktif di kelas ini.</div>'
+
+    # list siswa
+    html = '<ol class="list-group list-group-numbered">'
+    for s in list_siswa:
+        html += f'<li class="list-group-item d-flex justify-content-between align-items-start">{s.nama_siswa}</li>'
+    html += '</ol>'
+    return html
+
+
+@akademik_bp.route('/kenaikan-kelas/proses', methods=['POST'])
+@login_required
+def proses_kenaikan_kelas():
+    kelas_asal_id = request.form.get('kelas_asal_id', type=int)
+    kelas_tujuan_id = request.form.get('kelas_tujuan_id', type=int)
+
+    if not kelas_asal_id or not kelas_tujuan_id:
+        return '<div class="alert alert-danger fw-bold">Kelas asal dan kelas tujuan wajib diisi!</div>'
+
+    if kelas_asal_id == kelas_tujuan_id:
+        return '<div class="alert alert-danger fw-bold">Kelas asal dan tujuan tidak boleh sama!</div>'
+
+    siswa_asal = db.session.execute(
+        db.select(Siswa).where(Siswa.kelas_id == kelas_asal_id)
+    ).scalars().all()
+
+    if not siswa_asal:
+        return '<div class="alert alert-warning fw-bold">Tidak ada data siswa yang bisa dipindahkan dari kelas asal.</div>'
+
+    jumlah_siswa = len(siswa_asal)
+    for s in siswa_asal:
+        s.kelas_id = kelas_tujuan_id
+
+    db.session.commit()
+
+    return f"""
+    <div class="alert alert-success shadow-sm border-0 d-flex align-items-center" role="alert">
+        <div>
+            <i class="fa-solid fa-circle-check me-2 fs-5"></i> 
+            <b>Berhasil!</b> Sebanyak <b>{jumlah_siswa} siswa</b> resmi naik/pindah kelas.
+        </div>
+    </div>
+    <script>
+        document.getElementById('daftar-siswa-container').innerHTML = '<div class="alert alert-info text-center">Siswa sudah dipindahkan. Silakan pilih kelas lain.</div>';
+    </script>
+    """
